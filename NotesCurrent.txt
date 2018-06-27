@@ -1,0 +1,76 @@
+Next:
+    - Modify users table. Replace isOrgAdmin and isSysAdmin with roles, a string.
+    - Implement one to many in org vs users table.
+    - Get automatic database backup working. Can also backup any time.
+    - Get smooth dev, staging, and production cycle working. 
+
+One step at a time add framwork to prototype and refactor prototype:
+    - Put the entire prototype into the public folder. It replaces index.html. Make that index2.html.
+    - Get logon working. This is the first big step. The rest will be easy but take time.
+    - Admin page, add three sections for countries, orgs, users.
+    - Get countries working.
+    - Get orgs working.
+    - Get users working, with lots of validation.
+    - Refactor how three TrsDatabase tables are done into dataModel and viewModel.
+    - Put these three tables into the database.
+    - Redo the local storage articles table, put into database.
+    - Now all data is in the database and we have an online multi-user system!
+
+In progress with Zeit Now:
+    - Asked Zeit Now if they can provide a static host name for access whitelist. 
+    That should be much more possible than a static ip, due to use of dynamic ips by service hosts. 
+    Explain there a good reasons the industry standard is two level.    
+    - If no, cannot use Zeit Now. Too bad.
+    - If yes, simply add that name to the white list once they implement the feature. 
+
+The VLM (View/Logic/Model) client framework. The hard part is a generic CsfView. What to name the classes?
+Try CsfView, CsfViewListItem extends CsfView. 
+
+Methods:
+- constructor(containerSelector) Initializes the html in the container. 
+    Template: <div itemName="itemName"></div>
+    Select all elements, filter for hasAttribute('itemName'), put in items map. Key = itemName, value = element.
+- getItemValue(itemName) return items.get(itemsName).innerHTML for some, .value for others.
+- setItemValue(itemName, value) do that.
+- addItemEventListener(itemName, eventName, callback) Use arrow function to add addItemEventListener.
+This is for buttons and occasionally fields. 
+
+To handle list of records: Template:
+    <div class="csf-list-container">
+        <div class="csf-list-row">
+            <div columnName="columnName1"></div>
+            <div columnName="columnName2"></div>
+        </div>
+    </div>
+- (No longer needed) setRowSelectedListener(callback)
+- setRecordToItemCorrespondence(correspondence) An object with key=recordColumnName, value=itemName.
+This is used to automatically set item values when a row is selected. Why not use SAME column names 
+as item names??? Make that a standard. Yes, good idea. 
+- setRecords(records) Shows the records in the list, using columnNames. Maintains records and recordRows.
+Uses the csf-list-row div as a template for adding rows to the container. 
+How to handle foreign key field, like user organization name? Solve that when we come to it. 
+
+recordRows, a one-based array, has one row per record. Adds listener to each csf-list-row.
+The listener event contains the selected record. Logic uses this to setItemValue() for data to display.
+Logic has currentRecord. Buttons are Add, Edit, Delete. Add adds a default record. Edit changes into
+edit mode like the Rules and Facts pages. 
+- Delete checks to see if delete allowed. If not, complains.
+If allowed, presents confirmation dialog. If Yes selected, deletes the record. To support delete, 
+in CsfTable add method isDeleteAllowed(recordId). Example: Cannot delete an org that a user is in.
+Cannot delete a user who has entered rules, facts, etc. Implement with getAllRecords() where id = x.
+
+----- Setup node this way:
+> npm init -y   Uses all default in the package.json. Then edit it.
+> npm install nodemon --save-dev
+> npm install express --save
+> npm install body-parser --save
+> npm install sequelize --save
+> npm install mysql2 --save
+    "main": "./work/server.js",
+    "scripts": {
+        "start": "node ./work/server.js",
+        "dev":   "nodemon ./work/server.js"
+    },
+For server auth class:
+> npm install jsonwebtoken --save
+> npm install bcryptjs --save
